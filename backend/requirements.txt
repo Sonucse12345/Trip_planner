@@ -5,3 +5,4 @@ requests>=2.31
 geopy>=2.4
 reportlab>=4.1
 Pillow>=10.0
+gunicorn==21.2.0

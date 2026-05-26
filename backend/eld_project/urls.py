@@ -2,8 +2,14 @@
 
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
+
+def health_check(request):
+    """Simple health check endpoint"""
+    return JsonResponse({'status': 'Backend is running'})
 
 urlpatterns = [
+    path('', health_check),  # ✅ Add root endpoint
     path('admin/', admin.site.urls),
     path('api/', include('trips.urls')),
 ]

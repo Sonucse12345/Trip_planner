@@ -1,0 +1,7 @@
+Django>=4.2,<5.0
+djangorestframework>=3.14
+django-cors-headers>=4.3
+requests>=2.31
+geopy>=2.4
+reportlab>=4.1
+Pillow>=10.0

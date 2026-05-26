@@ -1,0 +1,18 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/build",
+  "installCommand": "npm install",
+  "env": {
+    "REACT_APP_API_URL": "@react_app_api_url",
+    "DJANGO_SECRET_KEY": "@django_secret_key",
+    "DJANGO_DEBUG": "@django_debug",
+    "ALLOWED_HOSTS": "@allowed_hosts",
+    "CORS_ALLOWED_ORIGINS": "@cors_allowed_origins"
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://trip-eld-planner.vercel.app/backend/api/:path*"
+    }
+  ]
+}

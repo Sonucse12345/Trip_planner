@@ -16,14 +16,31 @@ function App() {
   const [tripData, setTripData] = useState(null);
 
   useEffect(() => {
-    authAPI.getUser()
-      .then((res) => {
+    /**
+     * Initialize app: 
+     * 1. Fetch CSRF token from backend
+     * 2. Check if user is already authenticated
+     */
+    const initializeApp = async () => {
+      try {
+        // This GET request will set the CSRF token cookie in the browser
+        const res = await authAPI.getUser();
+        
         if (res.data.user) {
+          console.log('✅ User is authenticated:', res.data.user.username);
           setUser(res.data.user);
+        } else {
+          console.log('ℹ️ No user authenticated');
         }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error('Error checking authentication:', err.message);
+        // Not an error if user is not logged in
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeApp();
   }, []);
 
   if (loading) {

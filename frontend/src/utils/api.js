@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
+console.log('🔌 API Base URL:', API_BASE);
+
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,  // ✅ CRITICAL: Send cookies with every request for session management
@@ -24,22 +26,36 @@ api.interceptors.request.use((config) => {
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(config.method?.toUpperCase())) {
     if (csrfToken) {
       config.headers['X-CSRFToken'] = csrfToken;
+      console.log('✅ CSRF token added to request');
+    } else {
+      console.warn('⚠️ No CSRF token found');
     }
   }
   
   return config;
 });
 
-// Response interceptor: Handle 401 errors globally
+// Response interceptor: Handle errors globally
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('✅ Request successful:', response.config.url);
+    return response;
+  },
   (error) => {
-    if (error.response?.status === 401) {
-      // Optionally: Clear user state and redirect to login
-      console.warn('Unauthorized: Please log in again');
-      // Redirect to login if needed
-      // window.location.href = '/login';
+    const url = error.config?.url || 'unknown';
+    const status = error.response?.status || 'unknown';
+    const data = error.response?.data || {};
+    
+    console.error(`❌ Request failed [${status}]: ${url}`, data);
+    
+    if (status === 401) {
+      console.warn('🔐 Unauthorized: Please log in again');
+    } else if (status === 403) {
+      console.error('🚫 Forbidden: CSRF or permission issue', data);
+    } else if (status === 500) {
+      console.error('💥 Server error:', data);
     }
+    
     return Promise.reject(error);
   }
 );
@@ -58,41 +74,74 @@ function getCookie(name) {
  * Authentication API endpoints
  */
 export const authAPI = {
-  register: (data) => api.post('/auth/register/', data),
-  login: (data) => api.post('/auth/login/', data),
-  logout: () => api.post('/auth/logout/'),
-  getUser: () => api.get('/auth/user/'),
-  updateProfile: (data) => api.put('/auth/profile/', data),
+  register: (data) => {
+    console.log('📝 Calling: POST /auth/register/');
+    return api.post('/auth/register/', data);
+  },
+  login: (data) => {
+    console.log('🔑 Calling: POST /auth/login/');
+    return api.post('/auth/login/', data);
+  },
+  logout: () => {
+    console.log('🚪 Calling: POST /auth/logout/');
+    return api.post('/auth/logout/');
+  },
+  getUser: () => {
+    console.log('👤 Calling: GET /auth/user/');
+    return api.get('/auth/user/');
+  },
+  updateProfile: (data) => {
+    console.log('✏️ Calling: PUT /auth/profile/');
+    return api.put('/auth/profile/', data);
+  },
 };
 
 /**
  * Trip Planning API endpoints
  */
 export const tripAPI = {
-  planTrip: (data) => api.post('/trips/plan/', data),
-  getTrip: (tripId) => api.get(`/trips/${tripId}/`),
-  listTrips: () => api.get('/trips/'),
+  planTrip: (data) => {
+    console.log('🗺️ Calling: POST /trips/plan/');
+    return api.post('/trips/plan/', data);
+  },
+  getTrip: (tripId) => {
+    console.log(`📍 Calling: GET /trips/${tripId}/`);
+    return api.get(`/trips/${tripId}/`);
+  },
+  listTrips: () => {
+    console.log('📋 Calling: GET /trips/');
+    return api.get('/trips/');
+  },
 };
 
 /**
  * Geocoding API endpoints
  */
 export const geocodeAPI = {
-  search: (query) => api.get('/geocode/', { params: { q: query } }),
+  search: (query) => {
+    console.log(`🔍 Calling: GET /geocode/?q=${query}`);
+    return api.get('/geocode/', { params: { q: query } });
+  },
 };
 
 /**
  * Report/Email API endpoints
  */
 export const reportAPI = {
-  sendReport: (data) => api.post('/trips/send-report/', data),
+  sendReport: (data) => {
+    console.log('📧 Calling: POST /trips/send-report/');
+    return api.post('/trips/send-report/', data);
+  },
 };
 
 /**
  * Dashboard API endpoints
  */
 export const dashboardAPI = {
-  getData: () => api.get('/dashboard/'),
+  getData: () => {
+    console.log('📊 Calling: GET /dashboard/');
+    return api.get('/dashboard/');
+  },
 };
 
 export default api;

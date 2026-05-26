@@ -18,23 +18,32 @@ function App() {
   useEffect(() => {
     /**
      * Initialize app: 
-     * 1. Fetch CSRF token from backend
+     * 1. Fetch CSRF token from backend (sets csrftoken cookie)
      * 2. Check if user is already authenticated
      */
     const initializeApp = async () => {
       try {
-        // This GET request will set the CSRF token cookie in the browser
+        console.log('🚀 Initializing ELD Trip Planner...');
+        
+        // This GET request will:
+        // - Set the CSRF token cookie in the browser
+        // - Check if user is authenticated
         const res = await authAPI.getUser();
         
         if (res.data.user) {
           console.log('✅ User is authenticated:', res.data.user.username);
           setUser(res.data.user);
         } else {
-          console.log('ℹ️ No user authenticated');
+          console.log('ℹ️ No user authenticated - showing public dashboard');
         }
       } catch (err) {
-        console.error('Error checking authentication:', err.message);
-        // Not an error if user is not logged in
+        console.error('⚠️ Error during initialization:', err.message);
+        // Not a critical error if user is not logged in
+        // But log it for debugging CORS issues
+        if (err.response?.status === 0 || err.message.includes('CORS')) {
+          console.error('🔴 CORS ERROR: Backend is not accepting requests from this frontend');
+          console.error('Expected CORS_ALLOWED_ORIGINS to include:', window.location.origin);
+        }
       } finally {
         setLoading(false);
       }

@@ -17,7 +17,7 @@ if env_file.exists():
                     os.environ[key.strip()] = val.strip()
 
 # ===== PRODUCTION ENVIRONMENT VARIABLES =====
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-eld-trip-planner-dev-key-change-in-production')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-8d9kl2mxq9r4p7vb2c5n8z1x4a7d9k2l5m8p1r4t7v')
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 

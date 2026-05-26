@@ -71,10 +71,22 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 
 # Parse CORS origins from environment variable (comma-separated)
+# CORS_ALLOWED_ORIGINS = [
+#     origin.strip() for origin in os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+#     if origin.strip()
+# ]
+# ✅ CORRECT - This preserves https://
 CORS_ALLOWED_ORIGINS = [
     origin.strip() for origin in os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
     if origin.strip()
 ]
+
+# Also update CSRF_TRUSTED_ORIGINS with the same logic
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip() for origin in os.getenv('CSRF_ALLOWED_ORIGINS', os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000')).split(',')
+    if origin.strip()
+]
+
 
 # Allow these methods from CORS requests
 CORS_ALLOW_METHODS = [
